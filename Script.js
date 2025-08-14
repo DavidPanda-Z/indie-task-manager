@@ -1,71 +1,99 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const themeToggle = document.getElementById("themeToggle");
-    const addCategoryBtn = document.getElementById("addCategory");
-    const addTaskBtn = document.getElementById("addTask");
-    const categoryList = document.getElementById("categoryList");
-    const taskList = document.getElementById("taskList");
-    const taskCategory = document.getElementById("taskCategory");
+let categories = JSON.parse(localStorage.getItem("categories")) || ["Work", "Personal"];
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let isLightMode = localStorage.getItem("theme") === "light";
 
-    let categories = ["Work", "Personal", "Hobby"];
-    let tasks = [];
+document.body.classList.toggle("light", isLightMode);
 
-    function renderCategories() {
-        categoryList.innerHTML = "";
-        taskCategory.innerHTML = "";
-        categories.forEach(cat => {
-            let li = document.createElement("li");
-            li.textContent = cat;
-            categoryList.appendChild(li);
+// Elements
+const categoryList = document.getElementById("categoryList");
+const taskCategory = document.getElementById("taskCategory");
+const taskList = document.getElementById("taskList");
+const newCategoryInput = document.getElementById("newCategory");
+const addCategoryBtn = document.getElementById("addCategory");
+const newTaskInput = document.getElementById("newTask");
+const addTaskBtn = document.getElementById("addTask");
+const searchTasks = document.getElementById("searchTasks");
+const themeToggle = document.getElementById("themeToggle");
 
-            let option = document.createElement("option");
-            option.value = cat;
-            option.textContent = cat;
-            taskCategory.appendChild(option);
-        });
-    }
+// Render Functions
+function renderCategories() {
+    categoryList.innerHTML = "";
+    taskCategory.innerHTML = "";
+    categories.forEach(cat => {
+        let li = document.createElement("li");
+        li.textContent = cat;
+        li.onclick = () => filterTasks(cat);
+        categoryList.appendChild(li);
 
-    function renderTasks() {
-        taskList.innerHTML = "";
-        tasks.forEach(task => {
-            let div = document.createElement("div");
-            div.classList.add("task-card");
-            div.innerHTML = `
-                <strong>${task.name}</strong> (${task.category})<br>
-                Frequency: ${task.frequency}<br>
-                Notes: ${task.notes}
-            `;
-            taskList.appendChild(div);
-        });
-    }
-
-    addCategoryBtn.addEventListener("click", () => {
-        let newCat = document.getElementById("newCategory").value.trim();
-        if (newCat && !categories.includes(newCat)) {
-            categories.push(newCat);
-            document.getElementById("newCategory").value = "";
-            renderCategories();
-        }
+        let option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        taskCategory.appendChild(option);
     });
+    localStorage.setItem("categories", JSON.stringify(categories));
+}
 
-    addTaskBtn.addEventListener("click", () => {
-        let name = document.getElementById("newTask").value.trim();
-        let category = taskCategory.value;
-        let notes = document.getElementById("taskNotes").value.trim();
-        let frequency = document.getElementById("taskFrequency").value;
-
-        if (name) {
-            tasks.push({ name, category, notes, frequency });
-            document.getElementById("newTask").value = "";
-            document.getElementById("taskNotes").value = "";
+function renderTasks(filtered = tasks) {
+    taskList.innerHTML = "";
+    filtered.forEach((task, index) => {
+        let li = document.createElement("li");
+        li.textContent = `${task.name} (${task.category})`;
+        li.draggable = true;
+        li.ondragstart = e => e.dataTransfer.setData("index", index);
+        li.ondblclick = () => {
+            tasks.splice(index, 1);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
             renderTasks();
-        }
+        };
+        taskList.appendChild(li);
     });
+}
 
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("light-mode");
-        themeToggle.textContent = document.body.classList.contains("light-mode") ? "☀️" : "🌙";
-    });
+// Event Listeners
+addCategoryBtn.onclick = () => {
+    if (newCategoryInput.value.trim()) {
+        categories.push(newCategoryInput.value.trim());
+        newCategoryInput.value = "";
+        renderCategories();
+    }
+};
 
-    renderCategories();
+addTaskBtn.onclick = () => {
+    if (newTaskInput.value.trim()) {
+        tasks.push({ name: newTaskInput.value.trim(), category: taskCategory.value });
+        newTaskInput.value = "";
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        renderTasks();
+    }
+};
+
+searchTasks.oninput = () => {
+    let query = searchTasks.value.toLowerCase();
+    let filtered = tasks.filter(t => t.name.toLowerCase().includes(query));
+    renderTasks(filtered);
+};
+
+themeToggle.onclick = () => {
+    document.body.classList.toggle("light");
+    localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+};
+
+// Drag and Drop
+taskList.ondragover = e => e.preventDefault();
+taskList.ondrop = e => {
+    let fromIndex = e.dataTransfer.getData("index");
+    let toIndex = [...taskList.children].indexOf(e.target);
+    let moved = tasks.splice(fromIndex, 1)[0];
+    tasks.splice(toIndex, 0, moved);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
     renderTasks();
-});
+};
+
+function filterTasks(category) {
+    let filtered = tasks.filter(t => t.category === category);
+    renderTasks(filtered);
+}
+
+// Initial Render
+renderCategories();
+renderTasks();
