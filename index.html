@@ -1,11 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Indie Game Task Manager</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="root"></div>
+    <header>
+        <h1>My Task Manager</h1>
+        <button id="themeToggle">🌙</button>
+    </header>
+
+    <main>
+        <section id="categories">
+            <h2>Categories</h2>
+            <ul id="categoryList"></ul>
+            <input type="text" id="newCategory" placeholder="New category name">
+            <button id="addCategory">Add Category</button>
+        </section>
+
+        <section id="tasks">
+            <h2>Tasks</h2>
+            <div id="taskList"></div>
+            <input type="text" id="newTask" placeholder="New task">
+            <select id="taskCategory"></select>
+            <input type="text" id="taskNotes" placeholder="Notes">
+            <select id="taskFrequency">
+                <option value="Once">Once</option>
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+            </select>
+            <button id="addTask">Add Task</button>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
