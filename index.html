@@ -8,29 +8,24 @@
 </head>
 <body>
     <header>
-        <h1>My Task Manager</h1>
-        <button id="themeToggle">🌙</button>
+        <h1>📋 My Task Manager</h1>
+        <button id="themeToggle">🌙 Dark Mode</button>
     </header>
 
     <main>
-        <section id="categories">
+        <section id="categorySection">
             <h2>Categories</h2>
             <ul id="categoryList"></ul>
-            <input type="text" id="newCategory" placeholder="New category name">
+            <input type="text" id="newCategory" placeholder="New Category">
             <button id="addCategory">Add Category</button>
         </section>
 
-        <section id="tasks">
+        <section id="taskSection">
             <h2>Tasks</h2>
-            <div id="taskList"></div>
-            <input type="text" id="newTask" placeholder="New task">
+            <input type="text" id="searchTasks" placeholder="Search tasks...">
+            <ul id="taskList"></ul>
+            <input type="text" id="newTask" placeholder="New Task">
             <select id="taskCategory"></select>
-            <input type="text" id="taskNotes" placeholder="Notes">
-            <select id="taskFrequency">
-                <option value="Once">Once</option>
-                <option value="Daily">Daily</option>
-                <option value="Weekly">Weekly</option>
-            </select>
             <button id="addTask">Add Task</button>
         </section>
     </main>
